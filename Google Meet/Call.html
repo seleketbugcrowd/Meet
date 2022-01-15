@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call | Technical Sanket |</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" src="https://flashphoner.com/downloads/builds/flashphoner_client/wcs_api-2.0/current/flashphoner.js"></script>
+   <script type="text/javascript" src="screen-sharing-min.js"></script>   
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .main_div {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        .main_div video{
+            width: 100%;
+            height: 88%;
+        }
+        footer{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px;
+        }
+        footer .middle_div img{
+            cursor: pointer;
+        }
+        footer .middle_div img:nth-child(2){
+            margin: 0px 40px;
+            cursor: pointer;
+        }
+        footer .last_div img{
+            margin: 0px 30px;
+            cursor: pointer;
+        }
+        .main_div .chat{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 200px;
+            height: 50px;
+            border-radius: 5px;
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .main_div .details{
+            width: 350px;
+            height: 300px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            padding: 30px;
+        }
+        .main_div .details #link{
+            padding: 10px 25px;
+            font-size: 15px;
+            background-color: green;
+            border: none;
+            margin: 20px 0;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        .main_div .details .cross{
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            cursor: pointer;
+        }
+        .main_div .details input{
+            font-size: 14px;
+            outline: none;
+            padding: 10px 30px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body onload="init_api()">
+    <div class="main_div">
+        <video class="Video-Controller" autoplay="true" id="videoElement" controls src=""></video>
+        <div id="screen-sharing" style="width:320px;height:240px;border: solid 1px"></div>
+    <input type="button" onclick="connect()" value="Share Screen"/>
+        <div class="details">
+            <button class="cross">❌</button>
+            <p>Your Meeting Is Ready</p>
+            <button id="link">👬   Add Others</button>
+            <p style="font-size: 14px;">Or Share The Link With Others That You Want To In The meeting</p>
+            <input type="text" value="localhost:3300/usedgbxd" id="meet_link" disabled>
+            <button style="padding: 7px; margin:0px 10px; cursor:pointer;" id="Copy_Btn" class="btn" data-clipboard-target="#meet_link">📝</button>
+            <p style="font-size: 14px;">✔ Required Your Permission To Enter Meeting</p>
+        </div>
+        <div class="chat">
+            <img src="outline_feedback_black_24dp.png">
+            <p>1:00 PM</p>
+        </div>
+        <footer>
+            <div class="first_div">
+                <p>Meeting Details</p>
+            </div>
+            <div class="middle_div">
+                <img src="outline_mic_black_24dp.png">
+                <img src="outline_call_black_24dp.png">
+                <img src="outline_videocam_black_24dp.png" id="video_off">
+            </div>
+            <div class="last_div">
+                <img src="outline_closed_caption_black_24dp.png">
+                <img src="outline_present_to_all_black_24dp.png">
+            </div>
+        </footer>
+    </div>
+    <script src="dist/clipboard.min.js"></script>
+    <script>
+        
+        let flag=1;
+        const Details = document.querySelector('.details');
+        const Cross = document.querySelector('.cross');
+        Cross.addEventListener('click',()=>{
+            Details.style.display = 'none';
+        });
+
+        const video_off = document.getElementById("video_off");
+
+        var video = document.querySelector("#videoElement");
+
+        if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+            video.srcObject = stream;
+            })
+            .catch(function (err0r) {
+            console.log("Something went wrong!");
+            });
+        }
+
+        video_off.addEventListener('click',(e)=>{
+            console.log(flag);
+            if(flag==1){
+                var stream = video.srcObject;
+                var tracks = stream.getTracks();
+
+                for (var i = 0; i < tracks.length; i++) {
+                    var track = tracks[i];
+                    track.stop();
+                }
+                video.srcObject = null;
+                flag=0;
+            }
+            else{
+                if (navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function (stream) {
+                        video.srcObject = stream;
+                        })
+                        .catch(function (err0r) {
+                        console.log("Something went wrong!");
+                        });
+                    }
+                    flag=1;
+                }
+        });
+
+        //Status constants
+        var SESSION_STATUS = Flashphoner.constants.SESSION_STATUS;
+        var STREAM_STATUS = Flashphoner.constants.STREAM_STATUS;
+        
+        //Websocket session 
+        var session;
+        
+        //Init Flashphoner API on page load
+        function init_api() {
+            Flashphoner.init({});
+        }
+        
+        //Connect to WCS server over websockets
+        function connect() {
+            session = Flashphoner.createSession({
+                urlServer: "wss://demo.flashphoner.com"
+            }).on(SESSION_STATUS.ESTABLISHED, function(session) {
+                startStreaming(session);
+            });
+        }
+        
+        //Publishing Share Screen 
+        function startStreaming(session) {
+            var constraints = {
+                video: {}
+            };
+            constraints.video.type = "screen";
+            constraints.video.withoutExtension = true;
+            session.createStream({
+                name: "mystream",
+                display: document.getElementById("screen-sharing"),
+                constraints: constraints
+            }).publish();
+        }
+
+
+    </script>
+</body>
+</html>
